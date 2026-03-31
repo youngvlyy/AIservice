@@ -115,8 +115,8 @@ async function sendMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: text,
-        // 최근 10개만 전달 (컨텍스트 절약)
-        history: history.value.slice(-10).map(({ role, content }) => ({ role, content })),
+        // 현재 메시지 제외한 이전 대화만 전달 (현재 메시지는 message 필드로 별도 전달)
+        history: history.value.slice(0, -1).slice(-10).map(({ role, content }) => ({ role, content })),
       }),
     })
 
