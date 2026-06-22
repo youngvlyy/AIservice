@@ -13,6 +13,14 @@ app.use(express.json())
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
+//한자 제거 함수
+function keepKoreanOnly(text) {
+  return text
+    .replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\s\w\d\n\r!?.,;:'"()\-\[\]{}@#$%&*+=<>/\\|~`]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 // 메시지에서 탭 이동 의도 감지
 function detectNavigation(message) {
   const m = message
@@ -25,11 +33,14 @@ function detectNavigation(message) {
 
 // POST /api/chat — 메시지를 받아 RAG 기반 AI 튜터 응답 반환
 app.post('/api/chat', async (req, res) => {
-  const { message, history = [] } = req.body
+  const { history = [] } = req.body
+  const lastMessage = history[history.length - 1]
 
-  if (!message || typeof message !== 'string') {
+  if (!lastMessage || lastMessage.role !== 'user') {
     return res.status(400).json({ error: '메시지가 없습니다.' })
   }
+
+  const message = lastMessage.content
 
   // 1단계: RAG — 관련 문서 검색
   const relevantDocs = retrieveDocuments(message, 2)
@@ -37,7 +48,7 @@ app.post('/api/chat', async (req, res) => {
   const contextBlock =
     relevantDocs.length > 0
       ? `\n\n[참고 자료]\n` +
-        relevantDocs.map((d) => `## ${d.title}\n${d.content}`).join('\n\n')
+      relevantDocs.map((d) => `## ${d.title}\n${d.content}`).join('\n\n')
       : ''
 
   // 2단계: 시스템 프롬프트 구성
@@ -61,11 +72,10 @@ app.post('/api/chat', async (req, res) => {
       messages: [
         { role: 'system', content: systemPrompt },
         ...history.map((m) => ({ role: m.role, content: m.content })),
-        { role: 'user', content: message },
       ],
     })
 
-    const answer = response.choices[0].message.content
+    const answer = keepKoreanOnly(response.choices[0].message.content)
 
     res.json({
       answer,
@@ -111,7 +121,10 @@ ${rawData}
     })
 
     const text = response.choices[0].message.content.trim()
-    const json = JSON.parse(text.replace(/```json|```/g, '').trim())
+    const rawJson = JSON.parse(text.replace(/```json|```/g, '').trim())
+    const json = JSON.parse(
+      JSON.stringify(rawJson).replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\s\w\d\n\r!?.,;:'"()\-\[\]{}@#$%&*+=<>/\\|~`"]/g, '')
+    )
     res.json(json)
   } catch (err) {
     console.error('데이터 정리 오류:', err.message)
@@ -159,7 +172,10 @@ ${keyPoints ? `핵심 내용/데이터:\n${keyPoints}` : ''}
     })
 
     const text = response.choices[0].message.content.trim()
-    const json = JSON.parse(text.replace(/```json|```/g, '').trim())
+    const rawJson = JSON.parse(text.replace(/```json|```/g, '').trim())
+    const json = JSON.parse(
+      JSON.stringify(rawJson).replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\s\w\d\n\r!?.,;:'"()\-\[\]{}@#$%&*+=<>/\\|~`"]/g, '')
+    )
     res.json(json)
   } catch (err) {
     console.error('보고서 생성 오류:', err.message)
@@ -199,7 +215,10 @@ app.post('/api/classify-email', async (req, res) => {
     })
 
     const text = response.choices[0].message.content.trim()
-    const json = JSON.parse(text.replace(/```json|```/g, '').trim())
+    const rawJson = JSON.parse(text.replace(/```json|```/g, '').trim())
+    const json = JSON.parse(
+      JSON.stringify(rawJson).replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\s\w\d\n\r!?.,;:'"()\-\[\]{}@#$%&*+=<>/\\|~`"]/g, '')
+    )
     res.json(json)
   } catch (err) {
     console.error('이메일 분류 오류:', err.message)

@@ -53,6 +53,8 @@ const tabs = [
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -60,73 +62,84 @@ const tabs = [
 }
 
 body {
-  font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
+  font-family: 'Inter', -apple-system, 'Segoe UI', 'Noto Sans KR', sans-serif;
+  background: #09090b;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(99, 102, 241, 0.14), transparent),
+    radial-gradient(ellipse 50% 30% at 85% 5%, rgba(168, 85, 247, 0.08), transparent);
+  background-attachment: fixed;
+  color: #e4e4e7;
   min-height: 100vh;
 }
 </style>
 
 <style scoped>
 .page {
-  padding: 60px 20px 40px;
+  padding: 64px 24px 80px;
   max-width: 860px;
   margin: 0 auto;
 }
 
 .page-title {
-  text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 44px;
 }
 
 .page-title h1 {
-  font-size: 2.4rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, #f4f4f5 20%, #a78bfa 80%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 12px;
 }
 
 .page-title p {
-  color: #94a3b8;
-  font-size: 1.05rem;
+  color: #52525b;
+  font-size: 0.875rem;
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 36px;
-  border-bottom: 1px solid #334155;
+  gap: 2px;
+  margin-bottom: 32px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 11px;
+  padding: 4px;
+  width: fit-content;
 }
 
 .tab-btn {
   background: none;
-  border: none;
-  color: #64748b;
-  font-size: 1rem;
+  border: 1px solid transparent;
+  color: #52525b;
+  font-size: 0.85rem;
   font-family: inherit;
-  font-weight: 600;
-  padding: 10px 20px;
+  font-weight: 500;
+  padding: 8px 18px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: color 0.15s, border-color 0.15s;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .tab-btn:hover {
-  color: #94a3b8;
+  color: #a1a1aa;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .tab-btn.active {
-  color: #60a5fa;
-  border-bottom-color: #60a5fa;
+  color: #c4b5fd;
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.22);
 }
 
 @media (max-width: 600px) {
-  .page-title h1 { font-size: 1.7rem; }
-  .page { padding: 40px 16px 24px; }
-  .tab-btn { padding: 10px 12px; font-size: 0.88rem; }
+  .page { padding: 40px 16px 48px; }
+  .tabs { width: 100%; flex-wrap: wrap; }
+  .tab-btn { padding: 7px 12px; font-size: 0.8rem; }
 }
 </style>
